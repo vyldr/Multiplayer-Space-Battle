@@ -1,20 +1,20 @@
     // Set up our variables
-    var robot = {
-        name:"asdf",
-        x: Math.floor(window.innerWidth / 2) + 20,
-        y: Math.floor(window.innerHeight / 2) + 20,
-        vx: 0,
-        vy: 0,
-        angle: Math.PI * 1.5
-    };
-    var boxWidth;
-    var boxHeight;
+    var boxWidth = 1920;
+    var boxHeight = 1079;
     var step = 0.1;
-    var robotSize = 20;
+    var shipSize = 10;
     var interval = 1000;
     var commands = "";
     var commandlist = [];
     var canvas = document.getElementById('canvas').getContext('2d');
+    var ship = {
+        name:"asdf",
+        x: Math.floor(boxWidth / 2) + 20,
+        y: Math.floor(boxHeight / 2) + 20,
+        vx: 0,
+        vy: 0,
+        angle: Math.PI * 1.5
+    };
     var currentKeys = {
         up:false,
         down:false,
@@ -22,13 +22,9 @@
         right:false
     }
     
-    // Make sure everything fits when we resize the window
-    function resize() {
-        boxWidth = window.innerWidth;
-        boxHeight = window.innerHeight;
-        document.getElementById("canvas").width = window.innerWidth;
-        document.getElementById("canvas").height = window.innerHeight;
-    }    
+    // Set the canvas size
+    document.getElementById("canvas").width = boxWidth;
+    document.getElementById("canvas").height = boxHeight;
 
     // Redraw the frame
     function draw() {
@@ -37,19 +33,16 @@
         canvas.fillStyle = "#000";
         canvas.fillRect(0, 0, boxWidth, boxHeight);
         
-        // draw the robot
+        // draw the ship
         canvas.fillStyle = "#3bc";
         drawspaceship();
-        // canvas.fillRect((robot.x - robotSize / 2) % (boxWidth + robotSize)
-        //     - robotSize, (robot.y - robotSize / 2) % (boxHeight + robotSize)
-        //     - robotSize, robotSize, robotSize);
     }
 
     function drawspaceship() {
         canvas.beginPath();
-        canvas.moveTo(robot.x + 10 * Math.cos(robot.angle), robot.y + 10 * Math.sin(robot.angle));
-        canvas.lineTo(robot.x + 10 * Math.cos(robot.angle + 2.5), robot.y + 10 * Math.sin(robot.angle + 2.5));
-        canvas.lineTo(robot.x + 10 * Math.cos(robot.angle - 2.5), robot.y + 10 * Math.sin(robot.angle - 2.5));
+        canvas.moveTo(ship.x + shipSize * Math.cos(ship.angle), ship.y + shipSize * Math.sin(ship.angle));
+        canvas.lineTo(ship.x + shipSize * Math.cos(ship.angle + 2.5), ship.y + shipSize * Math.sin(ship.angle + 2.5));
+        canvas.lineTo(ship.x + shipSize * Math.cos(ship.angle - 2.5), ship.y + shipSize * Math.sin(ship.angle - 2.5));
         canvas.fill();
     }
       
@@ -61,7 +54,7 @@
             commands = this.responseText;
             commandlist = commandlist.concat(commands.split(""));
         };
-        xhttp.open("GET", "getInput.php?name=" + robotName, true);
+        xhttp.open("GET", "getInput.php?name=" + shipName, true);
         xhttp.send();
     }
 
@@ -101,23 +94,36 @@
         }  
     }, false);
 
-    // Move the robot with commands from the server
+    // Move the ship with commands from the server
     function move() {
+
+        // Accelerate!
         if (currentKeys.up) {
-            robot.vx += step * Math.cos(robot.angle);
-            robot.vy += step * Math.sin(robot.angle);
+            ship.vx += step * Math.cos(ship.angle);
+            ship.vy += step * Math.sin(ship.angle);
         }
-        if (currentKeys.down) {
-            robot.vx -= step * Math.cos(robot.angle);
-            robot.vy -= step * Math.sin(robot.angle);
-        }
+
+        // Rotate
         if (currentKeys.left)
-            robot.angle -= 0.1;
+            ship.angle -= 0.1;
         if (currentKeys.right)
-            robot.angle += 0.1;
+            ship.angle += 0.1;
         
-        robot.x += robot.vx;
-        robot.y += robot.vy;
+        // Update position
+        ship.x += ship.vx;
+        ship.y += ship.vy;
+
+        // Edge looping
+        if (ship.x > boxWidth)
+            ship.x -= boxWidth;
+        if (ship.x < 0)
+            ship.x += boxWidth;
+        if (ship.y > boxHeight)
+            ship.y -= boxHeight;
+        if (ship.y < 0)
+            ship.y += boxHeight;
+        
+
         draw();
     }
 
@@ -125,6 +131,4 @@
     // setInterval(update, interval);
     setInterval(move, 17)
 
-    // Set the initial size
-    resize();
 
