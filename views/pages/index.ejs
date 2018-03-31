@@ -1,66 +1,133 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <% include ../partials/header.ejs %>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document!</title>
+  <style>
+    body {
+      margin: 0px;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
 </head>
+<body onresize="resize();">
+  <!-- <h1> <% global.thevar.push('1') %>  <%= global.thevar %> </h1> -->
+  <canvas id='canvas'>
 
-<body>
+  </canvas>
+  <script>
+    // Set up our variables
+    var robot = {};
+    var robotName = "asdf";
+    robot.x = Math.floor(window.innerWidth / 2) + 20;
+    robot.y = Math.floor(window.innerHeight / 2) + 20;
+    var boxWidth;
+    var boxHeight;
+    var step = 1;
+    var robotSize = 20;
+    var interval = 1000;
+    var commands = "";
+    var commandlist = [];
+    var canvas = document.getElementById('canvas').getContext('2d');
+    var currentKeys = {
+        up:false,
+        down:false,
+        left:false,
+        right:false
+    }
+    
+    // Make sure everything fits when we resize the window
+    function resize() {
+        boxWidth = window.innerWidth;
+        boxHeight = window.innerHeight;
+        document.getElementById("canvas").width = window.innerWidth;
+        document.getElementById("canvas").height = window.innerHeight;
+    }    
 
-  <% include ../partials/nav.ejs %>
+    // Redraw the frame
+    function draw() {
+        // Clear the background
+        canvas.fillStyle = "#9cc";
+        canvas.fillRect(0, 0, boxWidth, boxHeight);
+        
+        // draw the robot
+        canvas.fillStyle = "#f00";
+        canvas.fillRect((robot.x - robotSize / 2) % (boxWidth + robotSize)
+            - robotSize, (robot.y - robotSize / 2) % (boxHeight + robotSize)
+            - robotSize, robotSize, robotSize);
+    }
 
-<div class="jumbotron text-center">
-  <div class="container">
-    <a href="/" class="lang-logo">
-      <img src="/lang-logo.png">
-    </a>
-    <h1>Getting Started with Node on Heroku</h1>
-    <p>This is a sample Node application deployed to Heroku. It's a reasonably simple app - but a good foundation for understanding how to get the most out of the Heroku platform.</p>
-    <a type="button" class="btn btn-lg btn-default" href="https://devcenter.heroku.com/articles/getting-started-with-nodejs"><span class="glyphicon glyphicon-flash"></span> Getting Started with Node</a>
-    <a type="button" class="btn btn-lg btn-primary" href="https://github.com/heroku/node-js-getting-started"><span class="glyphicon glyphicon-download"></span> Source on GitHub</a>
-  </div>
-</div>
-<div class="container">
-  <div class="alert alert-info text-center" role="alert">
-    To deploy your own copy, and learn the fundamentals of the Heroku platform, head over to the <a href="https://devcenter.heroku.com/articles/getting-started-with-nodejs" class="alert-link">Getting Started with Node on Heroku</a> tutorial.
-  </div>
-  <hr>
-  <div class="row">
-    <div class="col-md-6">
-      <h3><span class="glyphicon glyphicon-info-sign"></span> How this sample app works</h3>
-      <ul>
-        <li>This app was deployed to Heroku, either using Git or by using <a href="https://github.com/heroku/node-js-getting-started">Heroku Button</a> on the repository.</li>
+    // Get the new commands
+    function update() {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            commands = this.responseText;
+            commandlist = commandlist.concat(commands.split(""));
+        };
+        xhttp.open("GET", "getInput.php?name=" + robotName, true);
+        xhttp.send();
+    }
 
-        <li>When Heroku received the source code, it fetched all the dependencies in the <a href="https://github.com/heroku/node-js-getting-started/blob/master/package.json">package.json</a>, creating a deployable slug.</li>
-        <li>The platform then spins up a dyno, a lightweight container that provides an isolated environment in which the slug can be mounted and executed.</li>
-        <li>You can scale your app, manage it, and deploy over <a href="https://addons.heroku.com/">150 add-on services</a>, from the Dashboard or CLI.</li>
-      </ul>
-    </div>
-    <div class="col-md-6">
-      <h3><span class="glyphicon glyphicon-link"></span> Next Steps</h3>
-      <ul>
-        <li>If you are following the <a href="https://devcenter.heroku.com/articles/getting-started-with-nodejs">Getting Started</a> guide, then please head back to the tutorial and follow the next steps!</li>
-        <li>If you deployed this app by deploying the Heroku Button, then in a command line shell, run:</li>
-        <ul>
-          <li><code>git clone https://github.com/heroku/node-js-getting-started.git</code> - this will create a local copy of the source code for the app</li>
-          <li><code>cd node-js-getting-started</code> - change directory into the local source code repository</li>
-          <li><code>heroku git:remote -a &lt;your-app-name></code> - associate the Heroku app with the repository</li>
-          <li>You'll now be set up to run the app locally, or <a href="https://devcenter.heroku.com/articles/getting-started-with-nodejs#push-local-changes">deploy changes</a> to Heroku</li>
-        </ul>
-      </ul>
-      <h3><span class="glyphicon glyphicon-link"></span> Helpful Links</h3>
-      <ul>
-        <li><a href="https://www.heroku.com/home">Heroku</a></li>
-        <li><a href="https://devcenter.heroku.com/">Heroku Dev Center</a></li>
-        <li><a href="https://devcenter.heroku.com/articles/getting-started-with-nodejs">Getting Started with Node on Heroku</a></li>
-        <li><a href="https://devcenter.heroku.com/articles/deploying-nodejs">Deploying Node Apps on Heroku</a></li>
-      </ul>
-    </div>
-  </div> <!-- row -->
-   <div class="alert alert-info text-center" role="alert">
-    Please do work through the Getting Started guide, even if you do know how to build such an application.  The guide covers the basics of working with Heroku, and will familiarize you with all the concepts you need in order to build and deploy your own apps.
-  </div>
-</div>
+    // Handle keydowns
+    document.addEventListener('keydown', (event) => {
+        switch(event.key) {
+            case "ArrowUp":
+                currentKeys.up = true;
+                break;
+            case "ArrowDown":
+                currentKeys.down = true;
+                break;
+            case "ArrowLeft":
+                currentKeys.left = true;
+                break;
+            case "ArrowRight":
+                currentKeys.right = true;
+                break;
+        }  
+    }, false);
 
+    // Handle keyups
+    document.addEventListener('keyup', (event) => {
+        switch(event.key) {
+            case "ArrowUp":
+                currentKeys.up = false;
+                break;
+            case "ArrowDown":
+                currentKeys.down = false;
+                break;
+            case "ArrowLeft":
+                currentKeys.left = false;
+                break;
+            case "ArrowRight":
+                currentKeys.right = false;
+                break;
+        }  
+    }, false);
 
+    // Move the robot with commands from the server
+    function move() {
+        command = commandlist.shift();
+        if (currentKeys.up)
+            robot.y -= step;
+        if (currentKeys.down)
+            robot.y += step;
+        if (currentKeys.left)
+            robot.x -= step;
+        if (currentKeys.right)
+            robot.x += step;
+        draw();
+    }
+
+    // Start the repeating functions
+    setInterval(update, interval);
+    setInterval(move, 17)
+
+    // Set the initial size
+    resize();
+
+  </script>
 </body>
 </html>
