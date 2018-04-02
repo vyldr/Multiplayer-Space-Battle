@@ -13,7 +13,7 @@ const server = express()
 const wss = new SocketServer({ server });
 wss.on('connection', (ws) => {
   playerConnect(ws);
-  ws.on('message', (message) => playerUpdate(message));
+  ws.on('message', (message) => playerUpdate(ws, message));
   ws.on('close', () => playerDisconnect(ws));
 });
 
@@ -55,8 +55,8 @@ function playerDisconnect(ws) {
   gameState.players[ws.id] = 0; // Clear the player slot
 }
 
-function playerUpdate(jsonStatus) {
+function playerUpdate(ws, jsonStatus) {
   playerStatus = JSON.parse(jsonStatus);
-  //gameState.players.push(playerStatus);
+  gameState.players[ws.id] = playerStatus;
 }
 

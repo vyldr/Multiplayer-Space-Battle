@@ -5,7 +5,8 @@ var updateInterval = 1000;
 ws.onmessage = function (event) {
     gameState = JSON.parse(event.data);
 };
-setTimeout(() => { ws.send(JSON.stringify(ship)); }, 2000);
+
+setInterval(() => { ws.send(JSON.stringify(ship)); }, 2000);
 
 // Everything that is happening now
 var gameState = {};
