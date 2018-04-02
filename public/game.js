@@ -1,12 +1,26 @@
-// Set up our variables
-var boxWidth = 1280;
-var boxHeight = 768;
-var acceleration = 0.05;
-var shipSize = 10;
-var interval = 1000;
-var commands = "";
-var commandlist = [];
+// Set up the WebSocket
+var HOST = location.origin.replace(/^http/, 'ws');
+var ws = new WebSocket(HOST);
+var updateInterval = 1000;
+ws.onmessage = function (event) {
+    console.log(event.data);
+};
+setTimeout(() => { ws.send('Message from the browser!'); }, 2000);
+
+// Everything that is happening now
+var gameState = {};
+
+// Set up our constants
+const boxWidth = 1280;
+const boxHeight = 768;
+const acceleration = 0.05;
+const shipSize = 10;
+const interval = 1000;
+
+// The main game window
 var canvas = document.getElementById('canvas').getContext('2d');
+
+// The player object
 var ship = {
     name:"asdf",
     // position
@@ -21,6 +35,7 @@ var ship = {
     ystar: -10000000  // with the modulus operator and negative numbers
 };
 
+// Stars for the background
 var stars = [];
 for (var i = 0; i < 1000; i++) {
     var star = {
@@ -34,6 +49,7 @@ for (var i = 0; i < 1000; i++) {
     stars.push(star);
 }
 
+// Which keys are currently pressed?
 var currentKeys = {
     up:    false,
     down:  false,
@@ -74,17 +90,6 @@ function drawspaceship() {
     canvas.fill();
 }
     
-
-// Get the new commands
-function update() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        commands = this.responseText;
-        commandlist = commandlist.concat(commands.split(""));
-    };
-    xhttp.open("GET", "getInput.php?name=" + shipName, true);
-    xhttp.send();
-}
 
 // Handle keydowns
 document.addEventListener('keydown', (event) => {
