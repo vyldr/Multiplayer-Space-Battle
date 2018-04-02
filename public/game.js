@@ -3,9 +3,9 @@ var HOST = location.origin.replace(/^http/, 'ws');
 var ws = new WebSocket(HOST);
 var updateInterval = 1000;
 ws.onmessage = function (event) {
-    console.log(event.data);
+    gameState = event.data;
 };
-setTimeout(() => { ws.send('Message from the browser!'); }, 2000);
+setTimeout(() => { ws.send(JSON.stringify(ship)); }, 2000);
 
 // Everything that is happening now
 var gameState = {};
@@ -22,7 +22,7 @@ var canvas = document.getElementById('canvas').getContext('2d');
 
 // The player object
 var ship = {
-    name:"asdf",
+    name: 'Spaceship:' + Math.floor(Math.random() * 10000),
     // position
     x: Math.floor(boxWidth / 2),
     y: Math.floor(boxHeight / 2),
@@ -30,9 +30,6 @@ var ship = {
     // velocity
     vx: 0,
     vy: 0,
-    // for calculating the stars
-    xstar: -10000000, // These numbers are super big because of the problem 
-    ystar: -10000000  // with the modulus operator and negative numbers
 };
 
 // Stars for the background
@@ -48,6 +45,9 @@ for (var i = 0; i < 1000; i++) {
     };
     stars.push(star);
 }
+// For calculating the star's positions
+var xstar = -10000000; // These numbers are super big because of the problem 
+var ystar = -10000000;  // with the modulus operator and negative numbers
 
 // Which keys are currently pressed?
 var currentKeys = {
@@ -72,8 +72,8 @@ function draw() {
     stars.forEach(function(star) {
         canvas.fillStyle = "rgba(" + star.r +", " + star.g + ", " + star.b + ", " + star.z +")";
         canvas.fillRect(
-            (star.x - ship.xstar * star.z / 4) % boxWidth,
-            (star.y - ship.ystar * star.z / 4) % boxHeight,
+            (star.x - xstar * star.z / 4) % boxWidth,
+            (star.y - ystar * star.z / 4) % boxHeight,
              2, 2);
       });
     
@@ -147,8 +147,8 @@ function move() {
     ship.y += ship.vy;
 
     // Update position for stars
-    ship.xstar += ship.vx;
-    ship.ystar += ship.vy;
+    xstar += ship.vx;
+    ystar += ship.vy;
 
     // Edge looping
     if (ship.x > boxWidth)
@@ -166,6 +166,6 @@ function move() {
 
 // Start the repeating functions
 // setInterval(update, interval);
-setInterval(move, 17)
+setInterval(move, 20)
 
 

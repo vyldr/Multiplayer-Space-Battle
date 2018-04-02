@@ -13,7 +13,7 @@ const server = express()
 const wss = new SocketServer({ server });
 wss.on('connection', (ws) => {
   console.log('Client connected');
-  ws.on('message', (message) => console.log(message));
+  ws.on('message', (message) => playerUpdate(message));
   ws.on('close', () => console.log('Client disconnected'));
 });
 
@@ -29,6 +29,8 @@ global.gameState = {
   bullets: [],
 }
 
-// .players = [];
-// global.gameState.bullets = [];
+function playerUpdate(jsonStatus) {
+  playerStatus = JSON.parse(jsonStatus);
+  global.gameState.players.push(playerStatus);
+}
 
