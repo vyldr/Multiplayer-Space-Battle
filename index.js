@@ -12,25 +12,51 @@ const server = express()
 
 const wss = new SocketServer({ server });
 wss.on('connection', (ws) => {
-  console.log('Client connected');
+  playerConnect(ws);
   ws.on('message', (message) => playerUpdate(message));
-  ws.on('close', () => console.log('Client disconnected'));
+  ws.on('close', () => playerDisconnect(ws));
 });
 
 setInterval(() => {
   wss.clients.forEach((client) => {
-    client.send(JSON.stringify(global.gameState));
+    client.send(JSON.stringify(gameState));
   });
 }, 1000);
 
+activePlayers = 0;
 
-global.gameState = {
+gameState = {
   players: [],
   bullets: [],
 }
 
+function playerConnect(ws) {
+  activePlayers++;
+  
+  // Add a new player slot if necessary
+  if (activePlayers > gameState.players.length) {
+    gameState.players.push(0);
+  }
+  
+  // Give the player the lowest available ID
+  for (var i = 0; i < gameState.players.length; i++)
+    if (gameState.players[i] == 0) {
+      gameState.players[i] = 1;
+      ws.id = i;
+      break;
+    }
+  console.log('Client connected ' + ws.id);
+}
+
+
+function playerDisconnect(ws) {
+  console.log('Client disconnected ' + ws.id)
+  activePlayers--; // Update the number of players
+  gameState.players[ws.id] = 0; // Clear the player slot
+}
+
 function playerUpdate(jsonStatus) {
   playerStatus = JSON.parse(jsonStatus);
-  global.gameState.players.push(playerStatus);
+  //gameState.players.push(playerStatus);
 }
 

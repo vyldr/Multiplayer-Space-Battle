@@ -3,7 +3,7 @@ var HOST = location.origin.replace(/^http/, 'ws');
 var ws = new WebSocket(HOST);
 var updateInterval = 1000;
 ws.onmessage = function (event) {
-    gameState = event.data;
+    gameState = JSON.parse(event.data);
 };
 setTimeout(() => { ws.send(JSON.stringify(ship)); }, 2000);
 
