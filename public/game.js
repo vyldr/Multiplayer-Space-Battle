@@ -1,7 +1,7 @@
 // Set up our variables
 var boxWidth = 1280;
 var boxHeight = 768;
-var step = 0.1;
+var acceleration = 0.05;
 var shipSize = 10;
 var interval = 1000;
 var commands = "";
@@ -17,11 +17,9 @@ var ship = {
     vx: 0,
     vy: 0,
     // for calculating the stars
-    xstar: -10000000,
-    ystar: -10000000
+    xstar: -10000000, // These numbers are super big because of the problem 
+    ystar: -10000000  // with the modulus operator and negative numbers
 };
-// ship.xstar = ship.x;
-// ship.ystar = ship.y;
 
 var stars = [];
 for (var i = 0; i < 1000; i++) {
@@ -129,8 +127,8 @@ function move() {
 
     // Accelerate!
     if (currentKeys.up) {
-        ship.vx += step * Math.cos(ship.angle);
-        ship.vy += step * Math.sin(ship.angle);
+        ship.vx += acceleration * Math.cos(ship.angle);
+        ship.vy += acceleration * Math.sin(ship.angle);
     }
 
     // Rotate
