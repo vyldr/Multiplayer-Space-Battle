@@ -36,13 +36,16 @@ var ship = {
 // Stars for the background
 var stars = [];
 for (var i = 0; i < 1000; i++) {
+    var rand = Math.random() ** 2;
     var star = {
         x: Math.random() * boxWidth,
         y: Math.random() * boxHeight,
-        z: Math.random() ** 2,
-        r: Math.random() * 80 + 175,
-        g: Math.random() * 80 + 175,
-        b: Math.random() * 80 + 175,
+        z: rand,
+        color: 'rgba(' + 
+            (Math.random() * 100 + 155) + ',' +
+            (Math.random() * 100 + 155) + ',' +
+            (Math.random() * 100 + 155) + ',' +
+            rand + ')'
     };
     stars.push(star);
 }
@@ -71,7 +74,7 @@ function draw() {
 
     // draw the stars
     stars.forEach(function(star) {
-        canvas.fillStyle = "rgba(" + star.r +", " + star.g + ", " + star.b + ", " + star.z +")";
+        canvas.fillStyle = star.color; 
         canvas.fillRect(
             (star.x - xstar * star.z / 4) % boxWidth,
             (star.y - ystar * star.z / 4) % boxHeight,
