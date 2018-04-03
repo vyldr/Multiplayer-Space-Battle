@@ -85,16 +85,22 @@ function draw() {
     canvas.fillStyle = "#3bc";
     drawspaceship(ship);
 
+    // Stop here if there is no data from the server yet
     if (gameState.players == undefined)
-      return;
+        return;
 
+    // Draw all other ships
     gameState.players.forEach((element) => {
+        // Skip our own ship
         if (element.name != ship.name)
             drawspaceship(element); 
     });
 }
 
+// Draw a ship as a triangle with each vertex as a point on a circle around
+// the ship's position
 function drawspaceship(ship) {
+    canvas.fillStyle = document.getElementById('color').value;
     canvas.beginPath();
     canvas.moveTo(ship.x + shipSize * Math.cos(ship.angle), 
                   ship.y + shipSize * Math.sin(ship.angle));
@@ -182,6 +188,10 @@ function advance() {
     // });
     
     draw();
+}
+
+function start() {
+    document.getElementById('setup').style = "display: none;";
 }
 
 // Start the repeating functions
