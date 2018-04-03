@@ -21,7 +21,7 @@ setInterval(() => {
   wss.clients.forEach((client) => {
     client.send(JSON.stringify(gameState));
   });
-}, 1000);
+}, 16);
 
 activePlayers = 0;
 
@@ -42,15 +42,15 @@ function playerConnect(ws) {
   for (var i = 0; i < gameState.players.length; i++)
     if (gameState.players[i] == 0) {
       gameState.players[i] = 1;
-      ws.id = i;
+      ws.id = i; // This ID is unique for each player
       break;
     }
-  console.log('Client connected ' + ws.id);
+  console.log('Player connected ' + ws.id);
 }
 
 
 function playerDisconnect(ws) {
-  console.log('Client disconnected ' + ws.id)
+  console.log('Player disconnected ' + ws.id)
   activePlayers--; // Update the number of players
   gameState.players[ws.id] = 0; // Clear the player slot
 }

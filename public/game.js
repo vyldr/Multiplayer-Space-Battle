@@ -6,15 +6,15 @@ ws.onmessage = function (event) {
     gameState = JSON.parse(event.data);
 };
 
-setInterval(() => { ws.send(JSON.stringify(ship)); }, 2000);
+setInterval(() => { ws.send(JSON.stringify(ship)); }, 16);
 
 // Everything that is happening now
 var gameState = {};
 
 // Set up our constants
-const boxWidth = 1280;
+const boxWidth = 900; //1280;
 const boxHeight = 768;
-const acceleration = 0.05;
+const acceleration = 0.08;
 const shipSize = 10;
 const interval = 1000;
 
@@ -80,14 +80,25 @@ function draw() {
     
     // draw the ship
     canvas.fillStyle = "#3bc";
-    drawspaceship();
+    drawspaceship(ship);
+
+    if (gameState.players == undefined)
+      return;
+
+    gameState.players.forEach((element) => {
+        if (element.name != ship.name)
+            drawspaceship(element); 
+    });
 }
 
-function drawspaceship() {
+function drawspaceship(ship) {
     canvas.beginPath();
-    canvas.moveTo(ship.x + shipSize * Math.cos(ship.angle), ship.y + shipSize * Math.sin(ship.angle));
-    canvas.lineTo(ship.x + shipSize * Math.cos(ship.angle + 2.5), ship.y + shipSize * Math.sin(ship.angle + 2.5));
-    canvas.lineTo(ship.x + shipSize * Math.cos(ship.angle - 2.5), ship.y + shipSize * Math.sin(ship.angle - 2.5));
+    canvas.moveTo(ship.x + shipSize * Math.cos(ship.angle), 
+                  ship.y + shipSize * Math.sin(ship.angle));
+    canvas.lineTo(ship.x + shipSize * Math.cos(ship.angle + 2.5), 
+                  ship.y + shipSize * Math.sin(ship.angle + 2.5));
+    canvas.lineTo(ship.x + shipSize * Math.cos(ship.angle - 2.5), 
+                  ship.y + shipSize * Math.sin(ship.angle - 2.5));
     canvas.fill();
 }
     
@@ -129,7 +140,7 @@ document.addEventListener('keyup', (event) => {
 }, false);
 
 // Move the ship with commands from the server
-function move() {
+function advance() {
 
     // Accelerate!
     if (currentKeys.up) {
@@ -161,12 +172,17 @@ function move() {
     if (ship.y < 0)
         ship.y += boxHeight;
     
-
+    // Update local copies of all opponents for smoother motion
+    // gameState.players.forEach((element) => {
+    //     element.x += element.vx * 0.5;
+    //     element.y += element.vy * 0.5;
+    // });
+    
     draw();
 }
 
 // Start the repeating functions
 // setInterval(update, interval);
-setInterval(move, 20)
+setInterval(advance, 16)
 
 
