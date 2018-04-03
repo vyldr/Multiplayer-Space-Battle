@@ -6,16 +6,18 @@ ws.onmessage = function (event) {
     gameState = JSON.parse(event.data);
 };
 
-setInterval(() => { ws.send(JSON.stringify(ship)); }, 16);
 
 // Everything that is happening now
 var gameState = {};
+
+// Have we started?
+var started = false;
 
 // Set up our constants
 const boxWidth = 900; //1280;
 const boxHeight = 768;
 const acceleration = 0.08;
-const shipSize = 10;
+const shipSize = 12;
 const interval = 1000;
 
 // The main game window
@@ -23,7 +25,8 @@ var canvas = document.getElementById('canvas').getContext('2d');
 
 // The player object
 var ship = {
-    name: 'Spaceship:' + Math.floor(Math.random() * 10000),
+    name: '',
+    color: '#000000',
     // position
     x: Math.floor(boxWidth / 2),
     y: Math.floor(boxHeight / 2),
@@ -72,6 +75,9 @@ function draw() {
     canvas.fillStyle = "#000";
     canvas.fillRect(0, 0, boxWidth, boxHeight);
 
+    // Set the font for player names
+    canvas.font = "bold 12px sans-serif";
+
     // draw the stars
     stars.forEach(function(star) {
         canvas.fillStyle = star.color; 
@@ -100,7 +106,8 @@ function draw() {
 // Draw a ship as a triangle with each vertex as a point on a circle around
 // the ship's position
 function drawspaceship(ship) {
-    canvas.fillStyle = document.getElementById('color').value;
+    canvas.fillStyle = ship.color;
+    canvas.fillText(ship.name, ship.x + 16, ship.y + 4)
     canvas.beginPath();
     canvas.moveTo(ship.x + shipSize * Math.cos(ship.angle), 
                   ship.y + shipSize * Math.sin(ship.angle));
@@ -111,7 +118,6 @@ function drawspaceship(ship) {
     canvas.fill();
 }
     
-
 // Handle keydowns
 document.addEventListener('keydown', (event) => {
     switch(event.key) {
@@ -181,21 +187,27 @@ function advance() {
     if (ship.y < 0)
         ship.y += boxHeight;
     
-    // Update local copies of all opponents for smoother motion
-    // gameState.players.forEach((element) => {
-    //     element.x += element.vx * 0.5;
-    //     element.y += element.vy * 0.5;
-    // });
-    
     draw();
 }
 
 function start() {
+    // Hide the setup window
     document.getElementById('setup').style = "display: none;";
+
+    // Apply the chosen name and color
+    ship.name = document.getElementById('playerName').value;
+    ship.color = document.getElementById('color').value;
+
+    // This will be taken over by advance()
+    clearInterval(previewDraw);
+
+    // Start sending data to the server
+    setInterval(() => { ws.send(JSON.stringify(ship)); }, 16);
+    setInterval(advance, 16)
+
+    started = true;
+
 }
 
-// Start the repeating functions
-// setInterval(update, interval);
-setInterval(advance, 16)
-
+var previewDraw = setInterval(draw, 16);
 
