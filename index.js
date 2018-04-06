@@ -38,7 +38,7 @@ var gameState = {
 
 function playerConnect(ws) {
   if (activePlayers == 0)
-    broadcastInterval = setInterval(broadcast, 1600);
+    broadcastInterval = setInterval(broadcast, 16);
 
   activePlayers++;
   
