@@ -10,6 +10,8 @@ const server = express()
   .get('/', (req, res) => res.render('pages/index'))
   .listen(PORT, () => console.log(`Listening on ${ PORT }`));
 
+
+// WebSockets!
 const wss = new SocketServer({ server });
 wss.on('connection', (ws) => {
   playerConnect(ws);
@@ -17,20 +19,27 @@ wss.on('connection', (ws) => {
   ws.on('close', () => playerDisconnect(ws));
 });
 
-setInterval(() => {
+// Variable to hold the interval for the broadcast 
+// function so we can clear it
+var broadcastInterval;
+
+// Send the current game state to each client
+function broadcast() {
   wss.clients.forEach((client) => {
     client.send(JSON.stringify(gameState));
   });
-}, 16);
+}
 
-activePlayers = 0;
-
-gameState = {
+var activePlayers = 0;
+var gameState = {
   players: [],
   bullets: [],
 }
 
 function playerConnect(ws) {
+  if (activePlayers == 0)
+    broadcastInterval = setInterval(broadcast, 1600);
+
   activePlayers++;
   
   // Add a new player slot if necessary
@@ -45,7 +54,7 @@ function playerConnect(ws) {
       ws.id = i; // This ID is unique for each player
       break;
     }
-  console.log('Player connected ' + ws.id);
+    console.log('Player connected ' + ws.id);
 }
 
 
@@ -53,6 +62,10 @@ function playerDisconnect(ws) {
   console.log('Player disconnected ' + ws.id)
   activePlayers--; // Update the number of players
   gameState.players[ws.id] = 0; // Clear the player slot
+  
+  // The game is empty now
+  if (activePlayers == 0)
+    cleanup();
 }
 
 function playerUpdate(ws, jsonStatus) {
@@ -60,3 +73,13 @@ function playerUpdate(ws, jsonStatus) {
   gameState.players[ws.id] = playerStatus;
 }
 
+function cleanup() {
+  // Stop broadcasting
+  clearInterval(broadcastInterval);
+  
+  // Reset the game
+  gameState = {
+    players: [],
+    bullets: [],
+  }
+}
