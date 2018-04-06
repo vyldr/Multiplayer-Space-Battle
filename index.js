@@ -26,7 +26,8 @@ var broadcastInterval;
 // Send the current game state to each client
 function broadcast() {
   wss.clients.forEach((client) => {
-    client.send(JSON.stringify(gameState));
+    if (client.readyState === client.OPEN)
+      client.send(JSON.stringify(gameState));
   });
 }
 
