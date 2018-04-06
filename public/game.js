@@ -26,7 +26,7 @@ var canvas = document.getElementById('canvas').getContext('2d');
 // The player object
 var ship = {
     name: '',
-    color: '#000000',
+    color: '#3BC',
     // position
     x: Math.floor(boxWidth / 2),
     y: Math.floor(boxHeight / 2),
@@ -85,22 +85,22 @@ function draw() {
             (star.x - xstar * star.z / 4) % boxWidth,
             (star.y - ystar * star.z / 4) % boxHeight,
              2, 2);
-      });
+    });
     
-    // draw the ship
-    canvas.fillStyle = "#3bc";
-    drawspaceship(ship);
-
     // Stop here if there is no data from the server yet
     if (gameState.players == undefined)
-        return;
-
+    return;
+    
     // Draw all other ships
     gameState.players.forEach((element) => {
         // Skip our own ship
         if (element.name != ship.name)
-            drawspaceship(element); 
+        drawspaceship(element); 
     });
+        
+    // draw the ship
+    canvas.fillStyle = "#3bc";
+    drawspaceship(ship);
 }
 
 // Draw a ship as a triangle with each vertex as a point on a circle around
@@ -154,7 +154,7 @@ document.addEventListener('keyup', (event) => {
     }  
 }, false);
 
-// Move the ship with commands from the server
+// Advance the game one frame
 function advance() {
 
     // Accelerate!
