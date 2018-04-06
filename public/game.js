@@ -14,7 +14,7 @@ var gameState = {};
 var started = false;
 
 // Set up our constants
-const boxWidth = 900; //1280;
+const boxWidth = 1280;
 const boxHeight = 768;
 const acceleration = 0.08;
 const shipSize = 12;
