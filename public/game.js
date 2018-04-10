@@ -293,7 +293,9 @@ function advance() {
     draw();
 }
 
-function start() {
+function startGame() {
+    if (!(document.getElementById('setup').reportValidity()))
+        return false;
     // Hide the setup window
     document.getElementById('setup').style = "display: none;";
 
