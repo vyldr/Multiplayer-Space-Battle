@@ -107,6 +107,8 @@ function draw() {
     // Draw the lasers
     canvas.fillStyle = "#ff0000";
     lasers.forEach((laser) => {
+        if (laser.age > laserLifetime)
+            return;
         canvas.translate(laser.x, laser.y);
         canvas.rotate(laser.angle)
         canvas.fillRect(0, 0, 24, 2);
@@ -223,6 +225,17 @@ function advance() {
     lasers.forEach((laser) => {
         laser.x += laser.vx;
         laser.y += laser.vy;
+
+        // looping
+        if (laser.x > boxWidth)
+            laser.x -= boxWidth;
+        if (laser.x < 0)
+            laser.x += boxWidth;
+        if (laser.y > boxHeight)
+            laser.y -= boxHeight;
+        if (laser.y < 0)
+            laser.y += boxHeight;
+
         laser.age++;
     });
 
