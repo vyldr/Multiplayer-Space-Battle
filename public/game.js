@@ -16,7 +16,7 @@ var shotsTaken = 0;
 var started = false;
 
 // Set up our constants
-const boxWidth = 1280;
+const boxWidth = 800;//1280;
 const boxHeight = 768;
 const acceleration = 0.08;
 const shipSize = 12;
@@ -27,16 +27,18 @@ var canvas = document.getElementById('canvas').getContext('2d');
 
 // The player object
 var ship = {
-    name: '',
-    color: '#3BC',
+    name:   '',
+    color:  '#3BC',
     // position
-    x: Math.floor(boxWidth / 2),
-    y: Math.floor(boxHeight / 2),
-    angle: Math.PI * 1.5,
+    x:      Math.floor(boxWidth / 2),
+    y:      Math.floor(boxHeight / 2),
+    angle:  Math.PI * 1.5,
     // velocity
-    vx: 0,
-    vy: 0,
-    laser: false,
+    vx:     0,
+    vy:     0,
+    // lasers
+    laser:  false,
+    firing: false,
 };
 
 // Stars for the background
@@ -131,15 +133,18 @@ function drawspaceship(ship) {
 }
 
 // Fire the laser!
-function fireTheLaser() {
-    lasers.push({
+function fireTheLaser(ship) {
+    ship.firing = true;
+    newLaser = {
         x:     ship.x,
         y:     ship.y,
         vx:    ship.vx + 4 * Math.cos(ship.angle),
         vy:    ship.vy + 4 * Math.sin(ship.angle),
         angle: ship.angle,
         id:    ship.name + shotsTaken,
-    })
+        age:   0,
+    };
+
 }
 
 // Handle keydowns
@@ -158,7 +163,7 @@ document.addEventListener('keydown', (event) => {
             currentKeys.right = true;
             break;
         case " ":
-            fireTheLaser();
+            fireTheLaser(ship);
             break;
     }  
 }, false);
@@ -218,7 +223,18 @@ function advance() {
     lasers.forEach((laser) => {
         laser.x += laser.vx;
         laser.y += laser.vy;
+        laser.age++;
+        if (laser.age == 0)
+            laser = 0;
     });
+
+    // Remove old lasers
+
+    // Add new lasers
+    gameState.players.forEach((player) => {
+        if (player.firing && player.name != ship.name)
+            fireTheLaser(player);
+    })
     
     draw();
 }
@@ -235,7 +251,11 @@ function start() {
     clearInterval(previewDraw);
 
     // Start sending data to the server
-    setInterval(() => { ws.send(JSON.stringify(ship)); }, 16);
+    setInterval(() => { 
+        ws.send(JSON.stringify(ship));
+        ship.firing = false; 
+    }, 16);
+    
     setInterval(advance, 16)
 
     started = true;
