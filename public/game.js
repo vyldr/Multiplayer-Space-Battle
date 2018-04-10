@@ -9,6 +9,8 @@ ws.onmessage = function (event) {
 
 // Everything that is happening now
 var gameState = {};
+var lasers = [];
+var shotsTaken = 0;
 
 // Have we started?
 var started = false;
@@ -34,6 +36,7 @@ var ship = {
     // velocity
     vx: 0,
     vy: 0,
+    laser: false,
 };
 
 // Stars for the background
@@ -97,6 +100,15 @@ function draw() {
         if (element.name != ship.name)
         drawspaceship(element); 
     });
+
+    // Draw the lasers
+    canvas.fillStyle = "#ff0000";
+    lasers.forEach((laser) => {
+        canvas.translate(laser.x, laser.y);
+        canvas.rotate(laser.angle)
+        canvas.fillRect(0, 0, 24, 2);
+        canvas.resetTransform();
+    });
         
     // draw the ship
     canvas.fillStyle = "#3bc";
@@ -117,7 +129,19 @@ function drawspaceship(ship) {
                   ship.y + shipSize * Math.sin(ship.angle - 2.5));
     canvas.fill();
 }
-    
+
+// Fire the laser!
+function fireTheLaser() {
+    lasers.push({
+        x:     ship.x,
+        y:     ship.y,
+        vx:    ship.vx + 4 * Math.cos(ship.angle),
+        vy:    ship.vy + 4 * Math.sin(ship.angle),
+        angle: ship.angle,
+        id:    ship.name + shotsTaken,
+    })
+}
+
 // Handle keydowns
 document.addEventListener('keydown', (event) => {
     switch(event.key) {
@@ -132,6 +156,9 @@ document.addEventListener('keydown', (event) => {
             break;
         case "ArrowRight":
             currentKeys.right = true;
+            break;
+        case " ":
+            fireTheLaser();
             break;
     }  
 }, false);
@@ -186,6 +213,12 @@ function advance() {
         ship.y -= boxHeight;
     if (ship.y < 0)
         ship.y += boxHeight;
+
+    // Update lasers
+    lasers.forEach((laser) => {
+        laser.x += laser.vx;
+        laser.y += laser.vy;
+    });
     
     draw();
 }
