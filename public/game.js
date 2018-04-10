@@ -21,6 +21,7 @@ const boxHeight = 768;
 const acceleration = 0.08;
 const shipSize = 12;
 const interval = 1000;
+const laserLifetime = 200;
 
 // The main game window
 var canvas = document.getElementById('canvas').getContext('2d');
@@ -135,7 +136,7 @@ function drawspaceship(ship) {
 // Fire the laser!
 function fireTheLaser(ship) {
     ship.firing = true;
-    newLaser = {
+    lasers.push({
         x:     ship.x,
         y:     ship.y,
         vx:    ship.vx + 4 * Math.cos(ship.angle),
@@ -143,8 +144,7 @@ function fireTheLaser(ship) {
         angle: ship.angle,
         id:    ship.name + shotsTaken,
         age:   0,
-    };
-
+    });
 }
 
 // Handle keydowns
@@ -224,11 +224,12 @@ function advance() {
         laser.x += laser.vx;
         laser.y += laser.vy;
         laser.age++;
-        if (laser.age == 0)
-            laser = 0;
     });
 
     // Remove old lasers
+    if (lasers.length >= 1)
+        if (lasers[0].age > laserLifetime)
+            lasers.shift();
 
     // Add new lasers
     gameState.players.forEach((player) => {
