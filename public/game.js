@@ -119,8 +119,8 @@ function draw() {
     });
         
     // draw the ship
-    canvas.fillStyle = "#3bc";
-    drawspaceship(ship);
+    if (ship.health)
+        drawspaceship(ship);
 }
 
 // Draw a ship as a triangle with each vertex as a point on a circle around
@@ -147,9 +147,19 @@ function fireTheLaser(ship) {
         vx:    ship.vx + 4 * Math.cos(ship.angle),
         vy:    ship.vy + 4 * Math.sin(ship.angle),
         angle: ship.angle,
-        id:    ship.name + shotsTaken,
+        id:    ship.name,
         age:   0,
     });
+}
+
+function takeDamage() {
+    if (ship.health > 0)
+        ship.health --;
+    if (ship.health == 0) {
+        location.reload();
+    }
+    console.log('damage');
+    
 }
 
 // Handle keydowns
@@ -168,7 +178,8 @@ document.addEventListener('keydown', (event) => {
             currentKeys.right = true;
             break;
         case " ":
-            fireTheLaser(ship);
+            if (ship.health)
+                fireTheLaser(ship);
             break;
     }  
 }, false);
@@ -261,11 +272,23 @@ function advance() {
             if (Math.abs(gameState.players[i].x - lasers[j].x) < hitbox && 
                 Math.abs(gameState.players[i].y - lasers[j].y) < hitbox && 
                 // We don't want to hit ourselves
-                gameState.players[i].name != ship.name) {
+                gameState.players[i].name != ship.name &&
+                gameState.players[i].name != lasers[j].id) {
                     console.log('hit');
                     lasers[j].age = laserLifetime;
             }
         }
+    
+    // Take damage
+    for (var j = 0; j < lasers.length; j++) {
+        if (Math.abs(ship.x - lasers[j].x) < hitbox && 
+            Math.abs(ship.y - lasers[j].y) < hitbox && 
+            lasers[j].id != ship.name &&
+            lasers[j].age < laserLifetime) {
+                takeDamage();
+                lasers[j].age = laserLifetime;
+            }
+    }
     
     draw();
 }
@@ -287,11 +310,12 @@ function start() {
         ship.firing = false; 
     }, 16);
     
-    setInterval(advance, 16)
+    advanceInterval = setInterval(advance, 16)
 
     started = true;
 
 }
 
 var previewDraw = setInterval(draw, 16);
+var advanceInterval;
 
