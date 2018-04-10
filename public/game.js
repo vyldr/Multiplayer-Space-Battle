@@ -22,6 +22,7 @@ const acceleration = 0.08;
 const shipSize = 12;
 const interval = 1000;
 const laserLifetime = 200;
+const hitbox = 16;
 
 // The main game window
 var canvas = document.getElementById('canvas').getContext('2d');
@@ -40,6 +41,8 @@ var ship = {
     // lasers
     laser:  false,
     firing: false,
+
+    health: 10,
 };
 
 // Stars for the background
@@ -107,7 +110,7 @@ function draw() {
     // Draw the lasers
     canvas.fillStyle = "#ff0000";
     lasers.forEach((laser) => {
-        if (laser.age > laserLifetime)
+        if (laser.age >= laserLifetime)
             return;
         canvas.translate(laser.x, laser.y);
         canvas.rotate(laser.angle)
@@ -237,6 +240,7 @@ function advance() {
             laser.y += boxHeight;
 
         laser.age++;
+        
     });
 
     // Remove old lasers
@@ -249,6 +253,19 @@ function advance() {
         if (player.firing && player.name != ship.name)
             fireTheLaser(player);
     })
+
+    // Laser collision
+    for (var i = 0; i < gameState.players.length; i++)
+        for (var j = 0; j < lasers.length; j++) {
+            // calculate the hitbox
+            if (Math.abs(gameState.players[i].x - lasers[j].x) < hitbox && 
+                Math.abs(gameState.players[i].y - lasers[j].y) < hitbox && 
+                // We don't want to hit ourselves
+                gameState.players[i].name != ship.name) {
+                    console.log('hit');
+                    lasers[j].age = laserLifetime;
+            }
+        }
     
     draw();
 }
