@@ -12,7 +12,7 @@ canvas {
 
 #setup {
     background-color: rgba(255, 255, 255, 0.8);
-    width: 240px;
+    width: 260px;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     margin: auto;
     position: relative;
@@ -22,9 +22,10 @@ canvas {
 }
 
 #playerName {
+    box-sizing: border-box;
     padding: 4px;
     margin: auto;
-    width: 216px;
+    width: 260px;
     text-align: center;
     margin-bottom: 12px;
     font-size: 24px;
@@ -33,24 +34,28 @@ canvas {
 }
 
 #setup span {
+    box-sizing: border-box;
     display: block;
     float: left;
     width: 140px;
-    margin-top: 6px;
+    margin-top: 10px;
     font-size: 17px;
 }
 
 #color {
-    width: 100px;
-    height: 30px;
+    box-sizing: border-box;
+    width: 120px;
+    height: 40px;
     padding: 1px;
+    float: right;
 }
 
 #start {
+    box-sizing: border-box;
     display: block;
     margin: auto;
-    margin-top: 12px;
+    margin-top: 30px;
     width: 160px;
     font-weight: bold;
-    font-size: 20px
+    font-size: 20px;
 }

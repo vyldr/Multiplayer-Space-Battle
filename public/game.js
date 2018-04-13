@@ -17,7 +17,7 @@ var started = false;
 
 // Set up our constants
 const boxWidth = 1280;
-const boxHeight = 768;
+const boxHeight = 700;
 const acceleration = 0.08;
 const shipSize = 12;
 const interval = 1000;
@@ -53,11 +53,10 @@ for (var i = 0; i < 1000; i++) {
         x: Math.random() * boxWidth,
         y: Math.random() * boxHeight,
         z: rand,
-        color: 'rgba(' + 
-            (Math.random() * 100 + 155) + ',' +
-            (Math.random() * 100 + 155) + ',' +
-            (Math.random() * 100 + 155) + ',' +
-            rand + ')'
+        color: 'rgb(' + 
+            Math.floor((Math.random() * 100 + 155) * rand) + ',' +
+            Math.floor((Math.random() * 100 + 155) * rand) + ',' +
+            Math.floor((Math.random() * 100 + 155) * rand) + ')'
     };
     stars.push(star);
 }
@@ -87,7 +86,7 @@ function draw() {
     // Set the font for player names
     canvas.font = "bold 12px sans-serif";
 
-    // draw the stars
+    // Draw the stars
     stars.forEach(function(star) {
         canvas.fillStyle = star.color; 
         canvas.fillRect(
