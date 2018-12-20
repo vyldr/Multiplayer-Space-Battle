@@ -1,34 +1,25 @@
 {
-  "name": "node-js-getting-started",
-  "version": "0.3.0",
-  "description": "A sample Node.js app using Express 4",
-  "engines": {
-    "node": "8.9.1"
-  },
+  "name": "multiplayer-space-battle",
+  "version": "1.0.0",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "node test.js"
-  },
-  "dependencies": {
-    "bufferutil": "3.0.3",
-    "ejs": "^2.5.6",
-    "express": "4.16.3",
-    "utf-8-validate": "4.0.0",
-    "ws": "5.1.0"
-  },
-  "devDependencies": {
-    "request": "^2.81.0",
-    "tape": "^4.7.0"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/heroku/node-js-getting-started"
+    "url": "git+https://github.com/wildesteven/Multiplayer-Space-Battle.git"
   },
-  "keywords": [
-    "node",
-    "heroku",
-    "express"
-  ],
-  "license": "MIT"
+  "author": "Steven Wilde",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wildesteven/Multiplayer-Space-Battle/issues"
+  },
+  "homepage": "https://github.com/wildesteven/Multiplayer-Space-Battle#readme",
+  "dependencies": {
+    "ejs": "^2.6.1",
+    "express": "^4.16.4",
+    "ws": "^6.1.2"
+  }
 }
