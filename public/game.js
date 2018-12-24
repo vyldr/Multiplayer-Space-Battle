@@ -18,8 +18,6 @@ var started = false;
 // Set up our constants
 const worldWidth    = 3840;
 const worldHeight   = 2160;
-const windowWidth   = window.innerWidth;
-const windowHeight  = window.innerHeight;
 const acceleration  = 0.08;
 const shipSize      = 12;
 const interval      = 1000;
@@ -28,6 +26,8 @@ const hitbox        = 16;
 
 // The main game window
 var canvas = document.getElementById('canvas').getContext('2d');
+var   windowWidth   = window.innerWidth;
+var   windowHeight  = window.innerHeight;
 
 // The player object
 var playership = {
@@ -75,8 +75,13 @@ var currentKeys = {
 }
 
 // Set the canvas size
-document.getElementById("canvas").width = windowWidth;
-document.getElementById("canvas").height = windowHeight;
+function resize() {
+    windowWidth  = window.innerWidth;
+    windowHeight = window.innerHeight;
+
+    document.getElementById("canvas").width  = windowWidth;
+    document.getElementById("canvas").height = windowHeight;
+}
 
 // Redraw the frame
 function draw() {
@@ -195,7 +200,6 @@ document.addEventListener('keydown', (event) => {
                 fireTheLaser(playership);
             break;
         case "d":
-            console.log(playership.x);
     }  
 }, false);
 
