@@ -8,32 +8,34 @@ ws.onmessage = function (event) {
 
 
 // Everything that is happening now
-var gameState = {};
-var lasers = [];
+var gameState  = {};
+var lasers     = [];
 var shotsTaken = 0;
 
 // Have we started?
 var started = false;
 
 // Set up our constants
-const boxWidth = 1280;
-const boxHeight = 700;
-const acceleration = 0.08;
-const shipSize = 12;
-const interval = 1000;
+const worldWidth    = 3840;
+const worldHeight   = 2160;
+const windowWidth   = 1280;
+const windowHeight  = 700;
+const acceleration  = 0.08;
+const shipSize      = 12;
+const interval      = 1000;
 const laserLifetime = 200;
-const hitbox = 16;
+const hitbox        = 16;
 
 // The main game window
 var canvas = document.getElementById('canvas').getContext('2d');
 
 // The player object
-var ship = {
+var playership = {
     name:   '',
     color:  '#3BC',
     // position
-    x:      Math.floor(boxWidth / 2),
-    y:      Math.floor(boxHeight / 2),
+    x:      Math.floor(worldWidth / 2),
+    y:      Math.floor(worldHeight / 2),
     angle:  Math.PI * 1.5,
     // velocity
     vx:     0,
@@ -50,8 +52,8 @@ var stars = [];
 for (var i = 0; i < 1000; i++) {
     var rand = Math.random() ** 2;
     var star = {
-        x: Math.random() * boxWidth,
-        y: Math.random() * boxHeight,
+        x: Math.random() * worldWidth,
+        y: Math.random() * worldHeight,
         z: rand,
         color: 'rgb(' + 
             Math.floor((Math.random() * 100 + 155) * rand) + ',' +
@@ -61,7 +63,7 @@ for (var i = 0; i < 1000; i++) {
     stars.push(star);
 }
 // For calculating the star's positions
-var xstar = -10000000; // These numbers are super big because of the problem 
+var xstar = -10000000;  // These numbers are super big because of the problem 
 var ystar = -10000000;  // with the modulus operator and negative numbers
 
 // Which keys are currently pressed?
@@ -73,15 +75,16 @@ var currentKeys = {
 }
 
 // Set the canvas size
-document.getElementById("canvas").width = boxWidth;
-document.getElementById("canvas").height = boxHeight;
+document.getElementById("canvas").width = windowWidth;
+document.getElementById("canvas").height = windowHeight;
 
 // Redraw the frame
 function draw() {
     
     // Clear the background
+    canvas.resetTransform();
     canvas.fillStyle = "#000";
-    canvas.fillRect(0, 0, boxWidth, boxHeight);
+    canvas.fillRect(0, 0, worldWidth, worldHeight);
 
     // Set the font for player names
     canvas.font = "bold 12px sans-serif";
@@ -90,19 +93,23 @@ function draw() {
     stars.forEach(function(star) {
         canvas.fillStyle = star.color; 
         canvas.fillRect(
-            (star.x - xstar * star.z / 4) % boxWidth,
-            (star.y - ystar * star.z / 4) % boxHeight,
+            (star.x - xstar * star.z / 4) % worldWidth,
+            (star.y - ystar * star.z / 4) % worldHeight,
              2, 2);
     });
     
     // Stop here if there is no data from the server yet
     if (gameState.players == undefined)
     return;
-    
+
+    // Move the player's ship to the center
+    moveWindow();
+
+
     // Draw all other ships
     gameState.players.forEach((element) => {
         // Skip our own ship
-        if (element.name != ship.name)
+        if (element.name != playership.name)
         drawspaceship(element); 
     });
 
@@ -114,12 +121,19 @@ function draw() {
         canvas.translate(laser.x, laser.y);
         canvas.rotate(laser.angle)
         canvas.fillRect(0, 0, 24, 2);
-        canvas.resetTransform();
+        moveWindow();
     });
         
     // draw the ship
-    if (ship.health)
-        drawspaceship(ship);
+    if (playership.health)
+        drawspaceship(playership);
+}
+
+// Move the window to center the player
+function moveWindow() {
+    canvas.resetTransform();
+    canvas.translate(windowWidth / 2 - playership.x,
+                     windowHeight / 2 - playership.y)
 }
 
 // Draw a ship as a triangle with each vertex as a point on a circle around
@@ -152,9 +166,9 @@ function fireTheLaser(ship) {
 }
 
 function takeDamage() {
-    if (ship.health > 0)
-        ship.health --;
-    if (ship.health == 0) {
+    if (playership.health > 0)
+        playership.health --;
+    if (playership.health == 0) {
         location.reload();
     }
     console.log('damage');
@@ -177,9 +191,11 @@ document.addEventListener('keydown', (event) => {
             currentKeys.right = true;
             break;
         case " ":
-            if (ship.health)
-                fireTheLaser(ship);
+            if (playership.health)
+                fireTheLaser(playership);
             break;
+        case "d":
+            console.log(playership.x);
     }  
 }, false);
 
@@ -206,33 +222,33 @@ function advance() {
 
     // Accelerate!
     if (currentKeys.up) {
-        ship.vx += acceleration * Math.cos(ship.angle);
-        ship.vy += acceleration * Math.sin(ship.angle);
+        playership.vx += acceleration * Math.cos(playership.angle);
+        playership.vy += acceleration * Math.sin(playership.angle);
     }
 
     // Rotate
     if (currentKeys.left)
-        ship.angle -= 0.1;
+        playership.angle -= 0.1;
     if (currentKeys.right)
-        ship.angle += 0.1;
+        playership.angle += 0.1;
     
     // Update position
-    ship.x += ship.vx;
-    ship.y += ship.vy;
+    playership.x += playership.vx;
+    playership.y += playership.vy;
 
     // Update position for stars
-    xstar += ship.vx;
-    ystar += ship.vy;
+    xstar += playership.vx;
+    ystar += playership.vy;
 
     // Edge looping
-    if (ship.x > boxWidth)
-        ship.x -= boxWidth;
-    if (ship.x < 0)
-        ship.x += boxWidth;
-    if (ship.y > boxHeight)
-        ship.y -= boxHeight;
-    if (ship.y < 0)
-        ship.y += boxHeight;
+    if (playership.x > worldWidth)
+        playership.x -= worldWidth;
+    if (playership.x < 0)
+        playership.x += worldWidth;
+    if (playership.y > worldHeight)
+        playership.y -= worldHeight;
+    if (playership.y < 0)
+        playership.y += worldHeight;
 
     // Update lasers
     lasers.forEach((laser) => {
@@ -240,14 +256,14 @@ function advance() {
         laser.y += laser.vy;
 
         // looping
-        if (laser.x > boxWidth)
-            laser.x -= boxWidth;
+        if (laser.x > worldWidth)
+            laser.x -= worldWidth;
         if (laser.x < 0)
-            laser.x += boxWidth;
-        if (laser.y > boxHeight)
-            laser.y -= boxHeight;
+            laser.x += worldWidth;
+        if (laser.y > worldHeight)
+            laser.y -= worldHeight;
         if (laser.y < 0)
-            laser.y += boxHeight;
+            laser.y += worldHeight;
 
         laser.age++;
         
@@ -260,7 +276,7 @@ function advance() {
 
     // Add new lasers
     gameState.players.forEach((player) => {
-        if (player.firing && player.name != ship.name)
+        if (player.firing && player.name != playership.name)
             fireTheLaser(player);
     })
 
@@ -271,7 +287,7 @@ function advance() {
             if (Math.abs(gameState.players[i].x - lasers[j].x) < hitbox && 
                 Math.abs(gameState.players[i].y - lasers[j].y) < hitbox && 
                 // We don't want to hit ourselves
-                gameState.players[i].name != ship.name &&
+                gameState.players[i].name != playership.name &&
                 gameState.players[i].name != lasers[j].id) {
                     console.log('hit');
                     lasers[j].age = laserLifetime;
@@ -280,9 +296,9 @@ function advance() {
     
     // Take damage
     for (var j = 0; j < lasers.length; j++) {
-        if (Math.abs(ship.x - lasers[j].x) < hitbox && 
-            Math.abs(ship.y - lasers[j].y) < hitbox && 
-            lasers[j].id != ship.name &&
+        if (Math.abs(playership.x - lasers[j].x) < hitbox && 
+            Math.abs(playership.y - lasers[j].y) < hitbox && 
+            lasers[j].id != playership.name &&
             lasers[j].age < laserLifetime) {
                 takeDamage();
                 lasers[j].age = laserLifetime;
@@ -299,16 +315,16 @@ function startGame() {
     document.getElementById('setup').style = "display: none;";
 
     // Apply the chosen name and color
-    ship.name = document.getElementById('playerName').value;
-    ship.color = document.getElementById('color').value;
+    playership.name = document.getElementById('playerName').value;
+    playership.color = document.getElementById('color').value;
 
     // This will be taken over by advance()
     clearInterval(previewDraw);
 
     // Start sending data to the server
     setInterval(() => { 
-        ws.send(JSON.stringify(ship));
-        ship.firing = false; 
+        ws.send(JSON.stringify(playership));
+        playership.firing = false; 
     }, 16);
     
     advanceInterval = setInterval(advance, 16)
