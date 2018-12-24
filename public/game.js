@@ -18,8 +18,8 @@ var started = false;
 // Set up our constants
 const worldWidth    = 3840;
 const worldHeight   = 2160;
-const windowWidth   = 1280;
-const windowHeight  = 700;
+const windowWidth   = window.innerWidth;
+const windowHeight  = window.innerHeight;
 const acceleration  = 0.08;
 const shipSize      = 12;
 const interval      = 1000;
