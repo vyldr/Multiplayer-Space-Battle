@@ -98,8 +98,8 @@ function draw() {
     stars.forEach(function(star) {
         canvas.fillStyle = star.color; 
         canvas.fillRect(
-            (star.x - xstar * star.z / 4) % worldWidth,
-            (star.y - ystar * star.z / 4) % worldHeight,
+            (star.x - xstar * star.z / 4) % windowWidth,
+            (star.y - ystar * star.z / 4) % windowHeight,
              2, 2);
     });
     
