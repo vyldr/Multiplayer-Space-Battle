@@ -50,15 +50,15 @@ var playership = {
 // Stars for the background
 var stars = [];
 for (var i = 0; i < 1000; i++) {
-    var rand = Math.random() ** 2;
+    var depth = (i / 1000) ** 2;
     var star = {
         x: Math.random() * worldWidth,
         y: Math.random() * worldHeight,
-        z: rand,
+        z: depth,
         color: 'rgb(' + 
-            Math.floor((Math.random() * 100 + 155) * rand) + ',' +
-            Math.floor((Math.random() * 100 + 155) * rand) + ',' +
-            Math.floor((Math.random() * 100 + 155) * rand) + ')'
+            Math.floor((Math.random() * 100 + 155) * depth) + ',' +
+            Math.floor((Math.random() * 100 + 155) * depth) + ',' +
+            Math.floor((Math.random() * 100 + 155) * depth) + ')'
     };
     stars.push(star);
 }
