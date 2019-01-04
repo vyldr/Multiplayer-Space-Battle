@@ -16,8 +16,8 @@ var shotsTaken = 0;
 var started = false;
 
 // Set up our constants
-const worldWidth    = 3840;
-const worldHeight   = 2160;
+const worldWidth    = 7680;
+const worldHeight   = 4320;
 const acceleration  = 0.08;
 const shipSize      = 12;
 const interval      = 1000;
@@ -123,10 +123,13 @@ function draw() {
     lasers.forEach((laser) => {
         if (laser.age >= laserLifetime)
             return;
-        canvas.translate(laser.x, laser.y);
-        canvas.rotate(laser.angle)
-        canvas.fillRect(0, 0, 24, 2);
-        moveWindow();
+        for (var i = -1; i <= 1; i++)
+            for (var j = -1; j <= 1; j++) {
+                canvas.translate(laser.x + worldWidth * i, laser.y + worldHeight * j);
+                canvas.rotate(laser.angle)
+                canvas.fillRect(0, 0, 24, 2);
+                moveWindow();
+            }
     });
         
     // draw the ship
@@ -145,15 +148,20 @@ function moveWindow() {
 // the ship's position
 function drawspaceship(ship) {
     canvas.fillStyle = ship.color;
-    canvas.fillText(ship.name, ship.x + 16, ship.y + 4)
-    canvas.beginPath();
-    canvas.moveTo(ship.x + shipSize * Math.cos(ship.angle), 
-                  ship.y + shipSize * Math.sin(ship.angle));
-    canvas.lineTo(ship.x + shipSize * Math.cos(ship.angle + 2.5), 
-                  ship.y + shipSize * Math.sin(ship.angle + 2.5));
-    canvas.lineTo(ship.x + shipSize * Math.cos(ship.angle - 2.5), 
-                  ship.y + shipSize * Math.sin(ship.angle - 2.5));
-    canvas.fill();
+
+    // Draw the ships in their own location and in eight parallel universes
+    for (var i = -1; i <= 1; i++)
+        for (var j = -1; j <= 1; j++) {
+            canvas.fillText(ship.name, ship.x + 16 + worldWidth * i, ship.y + 4 + worldHeight * j);
+            canvas.beginPath();
+            canvas.moveTo(ship.x + worldWidth  * i + shipSize * Math.cos(ship.angle), 
+                          ship.y + worldHeight * j + shipSize * Math.sin(ship.angle));
+            canvas.lineTo(ship.x + worldWidth  * i + shipSize * Math.cos(ship.angle + 2.5), 
+                          ship.y + worldHeight * j + shipSize * Math.sin(ship.angle + 2.5));
+            canvas.lineTo(ship.x + worldWidth  * i + shipSize * Math.cos(ship.angle - 2.5), 
+                          ship.y + worldHeight * j + shipSize * Math.sin(ship.angle - 2.5));
+            canvas.fill();
+        }
 }
 
 // Fire the laser!
