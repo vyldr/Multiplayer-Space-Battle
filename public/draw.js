@@ -16,7 +16,7 @@ function moveWindow() {
 
 // Draw a ship as a triangle with each vertex as a point on a circle around
 // the ship's position
-function drawspaceship(ship) {
+function drawSpaceship(ship) {
     canvas.fillStyle = ship.color;
 
     // Draw the ships in their own location and in eight parallel universes
@@ -34,6 +34,28 @@ function drawspaceship(ship) {
         }
 }
 
+function drawStar(star) {
+    canvas.fillStyle = star.color;
+    canvas.fillRect(
+        (star.x - xstar * star.z / 4) % windowWidth,
+        (star.y - ystar * star.z / 4) % windowHeight,
+        2, 2);
+}
+
+function drawLaser(laser) {
+    if (laser.age >= laserLifetime)
+        return;
+
+    // Draw the ships in their own location and in eight parallel universes
+    for (var i = -1; i <= 1; i++)
+        for (var j = -1; j <= 1; j++) {
+            canvas.translate(laser.x + worldWidth * i, laser.y + worldHeight * j);
+            canvas.rotate(laser.angle)
+            canvas.fillRect(0, 0, 24, 2);
+            moveWindow();
+        }
+}
+
 // Redraw the frame
 function draw() {
     
@@ -46,13 +68,7 @@ function draw() {
     canvas.font = "bold 12px sans-serif";
 
     // Draw the stars
-    stars.forEach(function(star) {
-        canvas.fillStyle = star.color; 
-        canvas.fillRect(
-            (star.x - xstar * star.z / 4) % windowWidth,
-            (star.y - ystar * star.z / 4) % windowHeight,
-             2, 2);
-    });
+    stars.forEach((star) => { drawStar(star) });
     
     // Stop here if there is no data from the server yet
     if (gameState.players == undefined)
@@ -61,30 +77,19 @@ function draw() {
     // Move the player's ship to the center
     moveWindow();
 
-
     // Draw all other ships
-    gameState.players.forEach((element) => {
+    gameState.players.forEach((ship) => {
         // Skip our own ship
-        if (element.name != playership.name)
-        drawspaceship(element); 
+        if (ship.name != playership.name)
+        drawSpaceship(ship); 
     });
 
     // Draw the lasers
     canvas.fillStyle = "#ff0000";
-    lasers.forEach((laser) => {
-        if (laser.age >= laserLifetime)
-            return;
-        for (var i = -1; i <= 1; i++)
-            for (var j = -1; j <= 1; j++) {
-                canvas.translate(laser.x + worldWidth * i, laser.y + worldHeight * j);
-                canvas.rotate(laser.angle)
-                canvas.fillRect(0, 0, 24, 2);
-                moveWindow();
-            }
-    });
+    lasers.forEach((laser) => { drawLaser(laser) });
         
-    // draw the ship
+    // draw our ship
     if (playership.health)
-        drawspaceship(playership);
+        drawSpaceship(playership);
 }
 
