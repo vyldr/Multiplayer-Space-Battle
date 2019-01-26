@@ -45,6 +45,7 @@ var playership = {
     firing: false,
 
     health: 10,
+    laserHold: false,
 };
 
 // Stars for the background
@@ -65,14 +66,6 @@ for (var i = 0; i < 1000; i++) {
 // For calculating the star's positions
 var xstar = -10000000;  // These numbers are super big because of the problem 
 var ystar = -10000000;  // with the modulus operator and negative numbers
-
-// Which keys are currently pressed?
-var currentKeys = {
-    up:    false,
-    down:  false,
-    left:  false,
-    right: false
-}
 
 // Fire the laser!
 function fireTheLaser(ship) {
@@ -98,61 +91,33 @@ function takeDamage() {
     
 }
 
-// Handle keydowns
-document.addEventListener('keydown', (event) => {
-    switch(event.key) {
-        case "ArrowUp":
-            currentKeys.up = true;
-            break;
-        case "ArrowDown":
-            currentKeys.down = true;
-            break;
-        case "ArrowLeft":
-            currentKeys.left = true;
-            break;
-        case "ArrowRight":
-            currentKeys.right = true;
-            break;
-        case " ":
-            if (playership.health)
-                fireTheLaser(playership);
-            break;
-        case "d":
-    }  
-}, false);
-
-// Handle keyups
-document.addEventListener('keyup', (event) => {
-    switch(event.key) {
-        case "ArrowUp":
-            currentKeys.up = false;
-            break;
-        case "ArrowDown":
-            currentKeys.down = false;
-            break;
-        case "ArrowLeft":
-            currentKeys.left = false;
-            break;
-        case "ArrowRight":
-            currentKeys.right = false;
-            break;
-    }  
-}, false);
-
 // Advance the game one frame
 function advance() {
 
     // Accelerate!
-    if (currentKeys.up) {
+    if (input.up || (input.buttons[1].pressed)) {
         playership.vx += acceleration * Math.cos(playership.angle);
         playership.vy += acceleration * Math.sin(playership.angle);
     }
 
     // Rotate
-    if (currentKeys.left)
+    if (input.left)
         playership.angle -= 0.1;
-    if (currentKeys.right)
+    if (input.right)
         playership.angle += 0.1;
+
+    // Gamepad rotate
+    if (input.axes.length > 0)
+        if (Math.sqrt(input.axes[0] ** 2 + input.axes[1] ** 2) > 0.1)
+            playership.angle = Math.atan2(input.axes[1], input.axes[0]);
+
+    // Gamepad Lasers
+    if (!input.buttons[7].pressed)
+        playership.laserHold = false;
+    if (input.buttons[7].pressed && !playership.laserHold) {
+        fireTheLaser(playership);
+        playership.laserHold = true; // Don't allow continuous firing
+    }
     
     // Update position
     playership.x += playership.vx;
