@@ -94,31 +94,45 @@ function takeDamage() {
 // Advance the game one frame
 function advance() {
 
-    // Accelerate!
-    if (input.up || (input.buttons[1].pressed)) {
-        playership.vx += acceleration * Math.cos(playership.angle);
-        playership.vy += acceleration * Math.sin(playership.angle);
-    }
+    var accelerate = false;
 
-    // Rotate
+    // Keyboard accelerate!
+    if (input.up)
+        accelerate = true;
+
+    // Keyboard rotate
     if (input.left)
         playership.angle -= 0.1;
     if (input.right)
         playership.angle += 0.1;
 
-    // Gamepad rotate
-    if (input.axes.length > 0)
-        if (Math.sqrt(input.axes[0] ** 2 + input.axes[1] ** 2) > 0.1)
-            playership.angle = Math.atan2(input.axes[1], input.axes[0]);
+    // Gamepad input
+    if (gp) // Only check gamepad inputs if there is a gamepad connected
+    {
+        // Gamepad accelerate
+        if (input.buttons[1].pressed)
+            accelerate = true;
 
-    // Gamepad Lasers
-    if (!input.buttons[7].pressed)
-        playership.laserHold = false;
-    if (input.buttons[7].pressed && !playership.laserHold) {
-        fireTheLaser(playership);
-        playership.laserHold = true; // Don't allow continuous firing
+        // Gamepad rotate
+        if (input.axes.length > 0)
+            if (Math.sqrt(input.axes[0] ** 2 + input.axes[1] ** 2) > 0.1)
+                playership.angle = Math.atan2(input.axes[1], input.axes[0]);
+
+        // Gamepad Lasers
+        if (!input.buttons[7].pressed && !input.buttons[5].pressed)
+            playership.laserHold = false;
+        if ((input.buttons[7].pressed || input.buttons[5].pressed) && !playership.laserHold) {
+            fireTheLaser(playership);
+            playership.laserHold = true; // Don't allow continuous firing
+        }
     }
-    
+
+    // Apply acceleration
+    if (accelerate) {
+        playership.vx += acceleration * Math.cos(playership.angle);
+        playership.vy += acceleration * Math.sin(playership.angle);
+    }
+
     // Update position
     playership.x += playership.vx;
     playership.y += playership.vy;
@@ -198,12 +212,15 @@ function advance() {
 function startGame() {
     if (!(document.getElementById('setup').reportValidity()))
         return false;
-    // Hide the setup window
-    document.getElementById('setup').style = "display: none;";
 
     // Apply the chosen name and color
     playership.name = document.getElementById('playerName').value;
     playership.color = document.getElementById('color').value;
+
+    // Remove the setup window
+    document.getElementById('playerName').blur();
+    var setup = document.getElementById('setup');
+    setup.parentNode.removeChild(setup);
 
     // This will be taken over by advance()
     clearInterval(previewDraw);

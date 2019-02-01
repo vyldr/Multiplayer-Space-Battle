@@ -54,7 +54,7 @@ document.addEventListener('keyup', (event) => {
 
 var gp = 0;
 window.addEventListener("gamepadconnected", function () {
-    var gp = navigator.getGamepads()[0];
+    gp = navigator.getGamepads()[0];
     console.log("Gamepad " + gp.index + " connected: " + gp.id + ". " + gp.buttons.length + " buttons, " + gp.axes.length + " axes.");
 
     var gamepadInterval = setInterval(gamepadInput, 16);
