@@ -17,12 +17,12 @@ function moveWindow() {
 // Draw a ship as a triangle with each vertex as a point on a circle around
 // the ship's position
 function drawSpaceship(ship) {
-    canvas.fillStyle = ship.color;
-
+    
     // Draw the ships in their own location and in eight parallel universes
     for (var i = -1; i <= 1; i++)
         for (var j = -1; j <= 1; j++) {
-            canvas.fillText(ship.name, ship.x + 16 + worldWidth * i, ship.y + 4 + worldHeight * j);
+            canvas.fillStyle = ship.color;
+            canvas.fillText(ship.name, ship.x + 20 + worldWidth * i, ship.y + 4 + worldHeight * j);
             canvas.beginPath();
             canvas.moveTo(ship.x + worldWidth  * i + shipSize * Math.cos(ship.angle), 
                           ship.y + worldHeight * j + shipSize * Math.sin(ship.angle));
@@ -31,6 +31,20 @@ function drawSpaceship(ship) {
             canvas.lineTo(ship.x + worldWidth  * i + shipSize * Math.cos(ship.angle - 2.5), 
                           ship.y + worldHeight * j + shipSize * Math.sin(ship.angle - 2.5));
             canvas.fill();
+
+            // Draw the shield
+            if (ship.shield) {
+                canvas.fillStyle = 'rgba(0, 200, 255, 0.5)';
+                canvas.beginPath();
+                canvas.arc(ship.x + worldWidth * i, ship.y + worldHeight * j, 16, 0, 2 * Math.PI);
+                canvas.fill();
+
+                canvas.lineWidth = 2;
+                canvas.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+                canvas.beginPath();
+                canvas.arc(ship.x + worldWidth * i, ship.y + worldHeight * j, 16, 0, 2 * Math.PI);
+                canvas.stroke();
+            }
         }
 }
 
@@ -46,7 +60,7 @@ function drawLaser(laser) {
     if (laser.age >= laserLifetime)
         return;
 
-    // Draw the ships in their own location and in eight parallel universes
+    // Draw the lasers in their own location and in eight parallel universes
     for (var i = -1; i <= 1; i++)
         for (var j = -1; j <= 1; j++) {
             canvas.translate(laser.x + worldWidth * i, laser.y + worldHeight * j);

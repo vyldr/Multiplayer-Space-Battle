@@ -44,6 +44,7 @@ var playership = {
     laser:  false,
     firing: false,
 
+    shield: false,
     health: 10,
     laserHold: false,
 };
@@ -95,6 +96,7 @@ function takeDamage() {
 function advance() {
 
     var accelerate = false;
+    playership.shield = false;
 
     // Keyboard accelerate!
     if (input.up)
@@ -106,11 +108,15 @@ function advance() {
     if (input.right)
         playership.angle += 0.1;
 
+    // Keyboard Shield
+    if (input.down)
+        playership.shield = true;
+
     // Gamepad input
     if (gp) // Only check gamepad inputs if there is a gamepad connected
     {
         // Gamepad accelerate
-        if (input.buttons[1].pressed)
+        if (input.buttons.length > 0 && input.buttons[1].pressed)
             accelerate = true;
 
         // Gamepad rotate
@@ -119,12 +125,16 @@ function advance() {
                 playership.angle = Math.atan2(input.axes[1], input.axes[0]);
 
         // Gamepad Lasers
-        if (!input.buttons[7].pressed && !input.buttons[5].pressed)
+        if (input.buttons.length > 0 && !input.buttons[7].pressed && !input.buttons[5].pressed)
             playership.laserHold = false;
-        if ((input.buttons[7].pressed || input.buttons[5].pressed) && !playership.laserHold) {
+        if (input.buttons.length > 0 && (input.buttons[7].pressed || input.buttons[5].pressed) && !playership.laserHold) {
             fireTheLaser(playership);
             playership.laserHold = true; // Don't allow continuous firing
         }
+
+        // Gamepad shield
+        if (input.buttons.length > 0 && (input.buttons[6].pressed || input.buttons[4].pressed))
+            playership.shield = true;
     }
 
     // Apply acceleration
@@ -197,10 +207,11 @@ function advance() {
     
     // Take damage
     for (var j = 0; j < lasers.length; j++) {
-        if (Math.abs(playership.x - lasers[j].x) < hitbox && 
-            Math.abs(playership.y - lasers[j].y) < hitbox && 
-            lasers[j].id != playership.name &&
-            lasers[j].age < laserLifetime) {
+        if (Math.abs(playership.x - lasers[j].x) < hitbox && // In our hitbox
+            Math.abs(playership.y - lasers[j].y) < hitbox && // ''
+            lasers[j].id != playership.name &&               // Not our own laser
+            lasers[j].age < laserLifetime &&                 // Laser did not die yet
+            playership.shield == false) {                    // The shield is down
                 takeDamage();
                 lasers[j].age = laserLifetime;
             }
