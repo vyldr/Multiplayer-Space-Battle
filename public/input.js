@@ -25,7 +25,7 @@ document.addEventListener('keydown', (event) => {
             input.right = true;
             break;
         case " ":
-            if (playership.health)
+            if (playership.health && started)
                 fireTheLaser(playership);
             break;
         case "d":

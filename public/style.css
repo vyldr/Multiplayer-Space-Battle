@@ -26,6 +26,31 @@ canvas {
     border-radius: 8px;
 }
 
+#instructions {
+    background-color: rgba(255, 255, 255, 0.8);
+    width: 460px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 20px;
+    padding-top: 30px;
+    border-radius: 8px;
+    display: none;
+}
+
+#help {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 40px;
+    color: #fff;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: rgba(255, 255, 255, 0);
+    border: 0px;
+    text-shadow: 0px 0px 5px #000;
+}
+
 #playerName {
     box-sizing: border-box;
     padding: 4px;
@@ -59,8 +84,18 @@ canvas {
     box-sizing: border-box;
     display: block;
     margin: auto;
-    margin-top: 30px;
+    margin-top: 20px;
     width: 160px;
     font-weight: bold;
-    font-size: 20px;
+    font-size: 24px;
+}
+
+#showControls {
+    box-sizing: border-box;
+    display: block;
+    margin: auto;
+    margin-top: 30px;
+    width: 120px;
+    font-weight: bold;
+    font-size: 14px;
 }

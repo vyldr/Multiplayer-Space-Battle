@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
     <title>Space Battle!</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body onload="resize()" onresize="resize()">
     <canvas id='canvas'></canvas>
     <div id="setupContainer">
@@ -16,8 +18,48 @@
             <input type="text" name="playerName" id="playerName" placeholder="Choose a name..." required autofocus><br>
             <span for="color">Choose a color:</span>
             <input type="color" name="color" id="color" value="#00CCFF"><br>
+            <input type="button" value="How to play" id="showControls" onclick="showHelp();">
             <button type="submit" id="start" onclick="startGame(); return false;">Start!</button>
         </form>
     </div>
+    <div id="instructions">
+        <p>
+            <h4> How to play: </h4><br>
+
+            Your goal is to use your ship’s lasers to destroy as many opponents as possible without being destroyed
+            yourself. Each ship can be hit 10 times before it is destroyed.  
+
+            <h4>Controls</h4><br>
+
+            Keyboard:
+            <ul>
+                <li>Accelerate: Up arrow</li>
+                <li>Rotate: Left and right arrows</li>
+                <li>Fire the laser: Spacebar</li>
+                <li>Shield: Down arrow</li>
+            </ul>
+
+            Mouse:
+            <ul>
+                <li>Accelerate: Right click</li>
+                <li>Rotate: Left or right click</li>
+                <li>Fire the laser: Left click</li>
+                <li>Shield: Middle click</li>
+            </ul>
+
+            Controller:
+            <ul>
+                <li>Accelerate: Right face button</li>
+                <li>Rotate: Left analog stick</li>
+                <li>Fire the laser: Right trigger button</li>
+                <li>Shield: Left trigger button</li>
+            </ul>
+
+        </p>
+
+    </div>
+    <button id="help" onclick="showHelp();">&#9776</button>
+
 </body>
+
 </html>

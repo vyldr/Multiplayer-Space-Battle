@@ -248,6 +248,17 @@ function startGame() {
 
 }
 
+var controls = false;
+function showHelp() {
+    if (controls) { 
+        document.getElementById("instructions").style.display = "none"; 
+    }
+    else {
+        document.getElementById("instructions").style.display = "block"; 
+    }
+    controls = !controls;
+}
+
 var previewDraw = setInterval(draw, 16);
 var advanceInterval;
 
