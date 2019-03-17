@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body onload="resize()" onresize="resize()">
-    <canvas id='canvas'></canvas>
+<body onload="resize()" onresize="resize()" oncontextmenu="return false;">
+    <canvas id="canvas"></canvas>
     <div id="setupContainer">
         <form target='#' id="setup">
             <input type="text" name="playerName" id="playerName" placeholder="Choose a name..." required autofocus><br>

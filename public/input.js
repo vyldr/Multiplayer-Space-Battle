@@ -6,7 +6,12 @@ var input = {
     left:        false,
     right:       false,
     buttons:     [],
-    axes:        []
+    axes:        [],
+    mouseLeft:   false,
+    mouseMiddle: false,
+    mouseRight:  false,
+    mouseX:      0,
+    mouseY:      0
 }
 
 // Handle keydowns
@@ -50,6 +55,46 @@ document.addEventListener('keyup', (event) => {
             input.right = false;
             break;
     }  
+}, false);
+
+// Handle mouse down
+document.addEventListener('mousedown', (event) => {
+    switch(event.button) {
+        case 0:
+            input.mouseLeft = true;
+            break;
+        case 1:
+            input.mouseMiddle = true;
+            break;
+        case 2:
+            input.mouseRight = true;
+            break;
+    }
+    // input.mouseX = event.pageX;
+    // input.mouseY = event.pageY;
+}, false);
+
+// Handle mouse up
+document.addEventListener('mouseup', (event) => {
+    switch(event.button) {
+        case 0:
+            input.mouseLeft = false;
+            break;
+        case 1:
+            input.mouseMiddle = false;
+            break;
+        case 2:
+            input.mouseRight = false;
+            break;
+    }
+    // input.mouseX = event.pageX;
+    // input.mouseY = event.pageY;
+}, false);
+
+// Handle mouse movement
+document.addEventListener('mousemove', (event) => {
+    input.mouseX = event.pageX;
+    input.mouseY = event.pageY;
 }, false);
 
 var gp = 0;

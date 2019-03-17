@@ -112,6 +112,26 @@ function advance() {
     if (input.down)
         playership.shield = true;
 
+
+    // Mouse accelerate
+    if (input.mouseRight)
+        accelerate = true;
+
+    // Mouse rotate
+    if (input.mouseLeft || input.mouseMiddle || input.mouseRight)
+        playership.angle = Math.atan2((input.mouseY - windowHeight / 2), (input.mouseX - windowWidth / 2))
+
+    // Mouse shield
+    if (input.mouseMiddle)
+        playership.shield = true;
+
+    // Mouse lasers
+    if (input.mouseLeft)
+    {
+        fireTheLaser(playership);
+        input.mouseLeft = false; // No continuous shooting allowed
+    }
+
     // Gamepad input
     if (gp) // Only check gamepad inputs if there is a gamepad connected
     {
